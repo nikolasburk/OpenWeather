@@ -19,7 +19,6 @@ extension Reason: Error {
 
 final class OpenWeatherMapAPI {
   
-  
   let urlSession: URLSession
   
   init(apiKey: String, urlSession: URLSession = URLSession.shared) {
@@ -123,7 +122,8 @@ final class OpenWeatherMapAPI {
     
     let client = HTTPClient()
     client.apiRequest(urlSession, resource: forecastResource, failure: { (reason: Reason, data: Data?) in
-      print("failure")
+      print("request failed with: \(reason)")
+      completionHandler(.failure(reason))
       })
     { (forecast: [JSONWeather]) in
       let curried = self.jsonWeatherConverter(temperatureUnit)
@@ -159,6 +159,7 @@ final class OpenWeatherMapAPI {
       let weather = self.jsonWeatherConverter(temperatureUnit)(jsonWeather)
       let result: Result<Weather, Reason> = .success(weather)
       completionHandler(result)
+
     }
     
   }
